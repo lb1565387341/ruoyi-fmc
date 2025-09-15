@@ -8,6 +8,8 @@ import com.ruoyi.fmc.mapper.FinanceStatisticsMapper;
 import com.ruoyi.fmc.domain.FinanceStatistics;
 import com.ruoyi.fmc.service.IFinanceStatisticsService;
 import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.exception.UtilException;
+import com.ruoyi.common.utils.StringUtils;
 
 /**
  * 财务统计Service业务层处理
@@ -93,5 +95,68 @@ public class FinanceStatisticsServiceImpl implements IFinanceStatisticsService
     public int deleteFinanceStatisticsById(Long id)
     {
         return financeStatisticsMapper.deleteFinanceStatisticsById(id);
+    }
+
+    /**
+     * 导入财务统计数据
+     * 
+     * @param financeStatisticsList 财务统计数据列表
+     * @param updateSupport 是否更新已存在的数据
+     * @return 结果
+     */
+    @Override
+    public String importFinanceStatistics(List<FinanceStatistics> financeStatisticsList, boolean updateSupport) {
+        if (StringUtils.isNull(financeStatisticsList) || financeStatisticsList.size() == 0) {
+            throw new UtilException("导入数据不能为空！");
+        }
+        int successNum = 0;
+        int failureNum = 0;
+        StringBuilder successMsg = new StringBuilder();
+        StringBuilder failureMsg = new StringBuilder();
+        
+        for (FinanceStatistics financeStatistics : financeStatisticsList) {
+            try {
+                // 验证数据有效性
+                if (StringUtils.isNull(financeStatistics.getProductId())) {
+                    failureNum++;
+                    failureMsg.append("<br/>" + failureNum + "、商品ID不能为空");
+                    continue;
+                }
+                
+                // 判断是否已存在
+                FinanceStatistics queryFinanceStatistics = new FinanceStatistics();
+                queryFinanceStatistics.setProductId(financeStatistics.getProductId());
+                queryFinanceStatistics.setStatTime(financeStatistics.getStatTime());
+                List<FinanceStatistics> list = selectFinanceStatisticsList(queryFinanceStatistics);
+                
+                if (list == null || list.size() == 0) {
+                    // 不存在则插入
+                    insertFinanceStatistics(financeStatistics);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、商品ID " + financeStatistics.getProductId() + " 导入成功");
+                } else if (updateSupport) {
+                    // 存在且允许更新
+                    financeStatistics.setId(list.get(0).getId());
+                    updateFinanceStatistics(financeStatistics);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、商品ID " + financeStatistics.getProductId() + " 更新成功");
+                } else {
+                    failureNum++;
+                    failureMsg.append("<br/>" + failureNum + "、商品ID " + financeStatistics.getProductId() + " 已存在");
+                }
+            } catch (Exception e) {
+                failureNum++;
+                String msg = "<br/>" + failureNum + "、商品ID " + financeStatistics.getProductId() + " 导入失败：";
+                failureMsg.append(msg + e.getMessage());
+            }
+        }
+        
+        if (failureNum > 0) {
+            failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
+            throw new UtilException(failureMsg.toString());
+        } else {
+            successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
+        }
+        return successMsg.toString();
     }
 }

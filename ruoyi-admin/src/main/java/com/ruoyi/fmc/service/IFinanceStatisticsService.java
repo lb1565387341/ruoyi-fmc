@@ -58,4 +58,12 @@ public interface IFinanceStatisticsService
      * @return 结果
      */
     public int deleteFinanceStatisticsById(Long id);
+
+    /**
+     * 导入财务统计数据
+     * @param financeStatisticsList 财务统计数据列表
+     * @param updateSupport 是否更新已存在的数据
+     * @return 结果
+     */
+    public String importFinanceStatistics(List<FinanceStatistics> financeStatisticsList, boolean updateSupport);
 }

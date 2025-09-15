@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.fmc.domain.FinanceStatistics;
@@ -18,6 +19,8 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 财务统计Controller
@@ -29,6 +32,8 @@ import com.ruoyi.common.core.page.TableDataInfo;
 @RequestMapping("/fmc/fmcstatistics")
 public class FinanceStatisticsController extends BaseController
 {
+    private static final Logger log = LoggerFactory.getLogger(FinanceStatisticsController.class);
+    
     private String prefix = "fmc/fmcstatistics";
 
     @Autowired
@@ -124,5 +129,39 @@ public class FinanceStatisticsController extends BaseController
     public AjaxResult remove(String ids)
     {
         return toAjax(financeStatisticsService.deleteFinanceStatisticsByIds(ids));
+    }
+
+    /**
+     * 导入财务统计数据
+     */
+    @RequiresPermissions("fmc:fmcstatistics:import")
+    @Log(title = "财务统计", businessType = BusinessType.IMPORT)
+    @PostMapping("/importData")
+    @ResponseBody
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception
+    {
+        ExcelUtil<FinanceStatistics> util = new ExcelUtil<FinanceStatistics>(FinanceStatistics.class);
+        List<FinanceStatistics> financeStatisticsList = util.importExcel(file.getInputStream());
+        String message = financeStatisticsService.importFinanceStatistics(financeStatisticsList, updateSupport);
+        return AjaxResult.success(message);
+    }
+
+    /**
+     * 下载模板
+     */
+    @RequiresPermissions("fmc:fmcstatistics:view")
+    @GetMapping("/importTemplate")
+    @ResponseBody
+    public AjaxResult importTemplate()
+    {
+        try {
+            ExcelUtil<FinanceStatistics> util = new ExcelUtil<FinanceStatistics>(FinanceStatistics.class);
+            AjaxResult result = util.importTemplateExcel("财务统计数据");
+            log.info("Excel模板生成成功，文件名：{}", result.get("msg"));
+            return result;
+        } catch (Exception e) {
+            log.error("生成Excel模板失败", e);
+            return AjaxResult.error("生成Excel模板失败：" + e.getMessage());
+        }
     }
 }
