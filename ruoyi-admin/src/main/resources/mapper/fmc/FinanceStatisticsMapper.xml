@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.fmc.mapper.FinanceStatisticsMapper">
+    
+    <resultMap type="FinanceStatistics" id="FinanceStatisticsResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="channel"    column="channel"    />
+        <result property="category"    column="category"    />
+        <result property="statTime"    column="stat_time"    />
+        <result property="amount"    column="amount"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectFinanceStatisticsVo">
+        select id, product_id, product_name, channel, category, stat_time, amount, create_by, create_time, update_by, update_time from finance_statistics
+    </sql>
+
+    <select id="selectFinanceStatisticsList" parameterType="FinanceStatistics" resultMap="FinanceStatisticsResult">
+        <include refid="selectFinanceStatisticsVo"/>
+        <where>  
+            <if test="productId != null "> and product_id like concat('%', #{productId}, '%')</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="channel != null  and channel != ''"> and channel = #{channel}</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="params.beginStatTime != null and params.beginStatTime != '' and params.endStatTime != null and params.endStatTime != ''"> and stat_time between #{params.beginStatTime} and #{params.endStatTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectFinanceStatisticsById" parameterType="Long" resultMap="FinanceStatisticsResult">
+        <include refid="selectFinanceStatisticsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFinanceStatistics" parameterType="FinanceStatistics" useGeneratedKeys="true" keyProperty="id">
+        insert into finance_statistics
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="channel != null and channel != ''">channel,</if>
+            <if test="category != null and category != ''">category,</if>
+            <if test="statTime != null">stat_time,</if>
+            <if test="amount != null">amount,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="channel != null and channel != ''">#{channel},</if>
+            <if test="category != null and category != ''">#{category},</if>
+            <if test="statTime != null">#{statTime},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFinanceStatistics" parameterType="FinanceStatistics">
+        update finance_statistics
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="channel != null and channel != ''">channel = #{channel},</if>
+            <if test="category != null and category != ''">category = #{category},</if>
+            <if test="statTime != null">stat_time = #{statTime},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFinanceStatisticsById" parameterType="Long">
+        delete from finance_statistics where id = #{id}
+    </delete>
+
+    <delete id="deleteFinanceStatisticsByIds" parameterType="String">
+        delete from finance_statistics where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
