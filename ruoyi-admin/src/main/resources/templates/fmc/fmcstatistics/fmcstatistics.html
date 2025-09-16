@@ -89,7 +89,17 @@
                 modalName: "财务统计",
                 showFooter: true,
                 columns: [{
-                    checkbox: true
+                    checkbox: true,
+                    formatter: function(value, row, index) {
+                        // 合计行不显示复选框
+                        if (row.productId && row.productId.toString().includes('合计')) {
+                            return {
+                                checked: false,
+                                disabled: true
+                            };
+                        }
+                        return value;
+                    }
                 },
                 {
                     field: 'id',
@@ -98,7 +108,15 @@
                 },
                 {
                     field: 'productId',
-                    title: '商品id'
+                    title: '商品id',
+                    formatter: function(value, row, index) {
+                        // 检查是否是合计行
+                        if (row.productId && row.productId.toString().includes('合计')) {
+                            // 直接返回HTML内容，让浏览器渲染
+                            return row.productId;
+                        }
+                        return value;
+                    }
                 },
                 {
                     field: 'productName',
@@ -152,15 +170,25 @@
                 }],
                 // 添加合计行显示
                 responseHandler: function(res) {
+                    // 确保rows数组存在
+                    if (!res.rows) {
+                        res.rows = [];
+                    }
+                    
                     if (res.code == 0 && typeof res.sum !== 'undefined' && res.sum != null) {
                         // 创建合计行数据
                         var sumRow = {
                             productId: '<strong>合计金额</strong>',
                             amount: '<strong>' + (res.sum.amount !== undefined ? parseFloat(res.sum.amount).toFixed(2) : '0.00') + '</strong>'
                         };
-                        if (res.rows) {
-                            res.rows.push(sumRow);
-                        }
+                        res.rows.push(sumRow);
+                    } else if (res.code == 0) {
+                        // 即使没有sum数据也要显示合计行
+                        var sumRow = {
+                            productId: '<strong>合计金额</strong>',
+                            amount: '<strong>0.00</strong>'
+                        };
+                        res.rows.push(sumRow);
                     }
                     return res;
                 }
