@@ -49,7 +49,7 @@
                     <label class="col-sm-3 control-label is-required">统计时间：</label>
                     <div class="col-sm-8">
                         <div class="input-group date">
-                            <input name="statTime" th:value="${#dates.format(financeStatistics.statTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text" required>
+                            <input name="statTime" th:value="${#dates.format(financeStatistics.statTime, 'yyyy-MM-dd HH:mm:ss')}" class="form-control" placeholder="yyyy-MM-dd HH:mm:ss" type="text" required>
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                         </div>
                     </div>
@@ -80,8 +80,8 @@
         }
 
         $("input[name='statTime']").datetimepicker({
-            format: "yyyy-mm-dd",
-            minView: "month",
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: "hour",
             autoclose: true
         });
     </script>

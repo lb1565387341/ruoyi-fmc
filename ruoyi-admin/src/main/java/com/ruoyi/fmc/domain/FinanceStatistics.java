@@ -38,8 +38,8 @@ public class FinanceStatistics extends BaseEntity
     private String category;
 
     /** 统计时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    @Excel(name = "统计时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @Excel(name = "统计时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date statTime;
 
     /** 金额 */
