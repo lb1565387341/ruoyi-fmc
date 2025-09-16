@@ -119,7 +119,10 @@
                 },
                 {
                     field: 'statTime',
-                    title: '统计时间'
+                    title: '统计时间',
+                    formatter: function(value, row, index) {
+                       return $.common.dateFormat(value, 'yyyy-MM-dd HH:mm:ss');
+                    }
                 },
                 {
                     field: 'amount',
