@@ -24,6 +24,9 @@ public class TableDataInfo implements Serializable
     /** 消息内容 */
     private String msg;
 
+    /** 合计数据 */
+    private Object sum;
+
     /**
      * 表格数据对象
      */
@@ -81,5 +84,13 @@ public class TableDataInfo implements Serializable
     public void setMsg(String msg)
     {
         this.msg = msg;
+    }
+
+    public Object getSum() {
+        return sum;
+    }
+
+    public void setSum(Object sum) {
+        this.sum = sum;
     }
 }

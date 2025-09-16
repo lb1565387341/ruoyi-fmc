@@ -66,4 +66,12 @@ public interface IFinanceStatisticsService
      * @return 结果
      */
     public String importFinanceStatistics(List<FinanceStatistics> financeStatisticsList, boolean updateSupport);
+
+    /**
+     * 计算财务统计数据合计金额
+     * 
+     * @param financeStatistics 查询条件
+     * @return 合计金额
+     */
+    public FinanceStatistics selectFinanceStatisticsSum(FinanceStatistics financeStatistics);
 }

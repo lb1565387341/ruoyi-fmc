@@ -59,7 +59,13 @@ public class FinanceStatisticsController extends BaseController
     {
         startPage();
         List<FinanceStatistics> list = financeStatisticsService.selectFinanceStatisticsList(financeStatistics);
-        return getDataTable(list);
+        TableDataInfo dataTable = getDataTable(list);
+        
+        // 添加合计行数据
+        FinanceStatistics sum = financeStatisticsService.selectFinanceStatisticsSum(financeStatistics);
+        dataTable.setSum(sum);
+        
+        return dataTable;
     }
 
     /**

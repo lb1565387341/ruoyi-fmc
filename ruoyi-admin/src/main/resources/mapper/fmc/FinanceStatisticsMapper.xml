@@ -38,6 +38,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
 
+    <select id="selectFinanceStatisticsSum" parameterType="FinanceStatistics" resultType="com.ruoyi.fmc.domain.FinanceStatistics">
+        select sum(amount) as amount from finance_statistics
+        <where>  
+            <if test="productId != null "> and product_id like concat('%', #{productId}, '%')</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="channel != null  and channel != ''"> and channel = #{channel}</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="params.beginStatTime != null and params.beginStatTime != '' and params.endStatTime != null and params.endStatTime != ''"> and stat_time between #{params.beginStatTime} and #{params.endStatTime}</if>
+        </where>
+    </select>
+    
     <insert id="insertFinanceStatistics" parameterType="FinanceStatistics" useGeneratedKeys="true" keyProperty="id">
         insert into finance_statistics
         <trim prefix="(" suffix=")" suffixOverrides=",">
