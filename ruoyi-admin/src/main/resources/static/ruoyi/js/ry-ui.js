@@ -397,15 +397,8 @@ var table = {
             },
             // 下载模板
             importTemplate: function() {
-                $.get(activeWindow().table.options.importTemplateUrl, function(result) {
-                    if (result.code == web_status.SUCCESS) {
-                        window.location.href = ctx + "common/download?fileName=" + encodeURI(result.msg) + "&delete=" + true;
-                    } else if (result.code == web_status.WARNING) {
-                        $.modal.alertWarning(result.msg)
-                    } else {
-                        $.modal.alertError(result.msg);
-                    }
-                });
+                var downloadUrl = activeWindow().table.options.importTemplateUrl;
+                window.location.href = downloadUrl;
             },
             // 导入数据
             importExcel: function(formId, width, height) {

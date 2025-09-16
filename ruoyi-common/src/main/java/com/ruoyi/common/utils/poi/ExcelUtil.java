@@ -603,6 +603,46 @@ public class ExcelUtil<T>
     /**
      * 对list数据源将其里面的数据导入到excel表单
      * 
+     * @param outputStream 输出流
+     * @param sheetName 工作表的名称
+     * @return 结果
+     */
+    public void importTemplateExcel(OutputStream outputStream, String sheetName)
+    {
+        importTemplateExcel(outputStream, sheetName, StringUtils.EMPTY);
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单
+     * 
+     * @param outputStream 输出流
+     * @param sheetName 工作表的名称
+     * @param title 标题
+     * @return 结果
+     */
+    public void importTemplateExcel(OutputStream outputStream, String sheetName, String title)
+    {
+        this.init(null, sheetName, title, Type.IMPORT);
+        try
+        {
+            writeSheet();
+            wb.write(outputStream);
+        }
+        catch (Exception e)
+        {
+            log.error("导出Excel模板异常{}", e.getMessage());
+            throw new UtilException("导出Excel模板失败，请联系网站管理员！");
+        }
+        finally
+        {
+            IOUtils.closeQuietly(wb);
+            IOUtils.closeQuietly(outputStream);
+        }
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单
+     * 
      * @param sheetName 工作表的名称
      * @return 结果
      */

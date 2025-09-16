@@ -1,15 +1,19 @@
 package com.ruoyi.web.controller.demo.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.core.controller.BaseController;
@@ -201,11 +205,12 @@ public class DemoOperateController extends BaseController
      * 下载模板
      */
     @GetMapping("/importTemplate")
-    @ResponseBody
-    public AjaxResult importTemplate()
-    {
-        ExcelUtil<UserOperateModel> util = new ExcelUtil<UserOperateModel>(UserOperateModel.class);
-        return util.importTemplateExcel("用户数据");
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        ExcelUtil<UserOperateModel> util = new ExcelUtil<>(UserOperateModel.class);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"用户数据模板.xlsx\"");
+        util.importTemplateExcel(response.getOutputStream(), "用户数据");
     }
 
     /**
